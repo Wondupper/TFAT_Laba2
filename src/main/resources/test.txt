@@ -1,0 +1,4 @@
+if a <>> b then  a+1
+elseif c ==<< d then a << =<> b
+else a=b
+end
