@@ -101,6 +101,9 @@ public class SyntaxAnalyzer {
             if (currentLexeme.lexemeType() != LexemeType.END) {
                 throw new InvalidLexemeException("Ожидалась end", currentLexeme.startIndex());
             }
+            if(lexemeIterator.hasNext()){
+                throw new InvalidLexemeException("После end ничего не должно быть", currentLexeme.startIndex());
+            }
         }
     }
 
