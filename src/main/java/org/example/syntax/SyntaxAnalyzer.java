@@ -40,34 +40,57 @@ public class SyntaxAnalyzer {
         if (lexemeIterator.hasNext()) {
             currentLexeme = lexemeIterator.next();
             if (currentLexeme.lexemeType() != LexemeType.IF) {
-                throw new InvalidLexemeException(LexemeType.IF, currentLexeme.startIndex());
+                throw new InvalidLexemeException("Ожидался if", currentLexeme.startIndex());
             }
         } else {
-            throw new InvalidLexemeException(LexemeType.IF, currentLexeme.startIndex());
+            throw new InvalidLexemeException("Ожидался if", currentLexeme.startIndex());
         }
         checkCondition();
         if (lexemeIterator.hasNext()) {
             currentLexeme = lexemeIterator.next();
             if (currentLexeme.lexemeType() != LexemeType.THEN) {
-                throw new InvalidLexemeException(LexemeType.THEN, currentLexeme.startIndex());
+                throw new InvalidLexemeException("Ожидался then", currentLexeme.startIndex());
             }
         } else {
-            throw new InvalidLexemeException(LexemeType.THEN, currentLexeme.startIndex());
+            throw new InvalidLexemeException("Ожидался then", currentLexeme.startIndex());
         }
         checkStatement();
         if (lexemeIterator.hasNext()) {
             currentLexeme = lexemeIterator.next();
-            if (currentLexeme.lexemeType() == LexemeType.END) {
+            if (currentLexeme.lexemeType() == LexemeType.ELSEIF) {
+                checkElseIfStatement();
+            } else if (currentLexeme.lexemeType() == LexemeType.END) {
                 checkEnd();
             } else if (currentLexeme.lexemeType() == LexemeType.ELSE) {
                 checkStatement();
                 if (currentLexeme.lexemeType() == LexemeType.END) {
                     checkEnd();
                 } else {
-                    throw new InvalidLexemeException(LexemeType.END, currentLexeme.startIndex());
+                    throw new InvalidLexemeException("Ожидался end", currentLexeme.startIndex());
                 }
             } else {
-                throw new InvalidLexemeException(LexemeType.ELSE, currentLexeme.startIndex());
+                throw new InvalidLexemeException("Ожидался else", currentLexeme.startIndex());
+            }
+        }
+    }
+
+    private void checkElseIfStatement() {
+        if (lexemeIterator.hasNext()) {
+            checkCondition();
+            if (lexemeIterator.hasNext()) {
+                currentLexeme = lexemeIterator.next();
+                if (currentLexeme.lexemeType() != LexemeType.THEN) {
+                    throw new InvalidLexemeException("Ожидался then", currentLexeme.startIndex());
+                }
+            } else {
+                throw new InvalidLexemeException("Ожидался then", currentLexeme.startIndex());
+            }
+            checkStatement();
+            if (lexemeIterator.hasNext()) {
+                currentLexeme = lexemeIterator.next();
+                if (currentLexeme.lexemeType() == LexemeType.ELSEIF) {
+                    checkElseIfStatement();
+                }
             }
         }
     }
@@ -76,7 +99,7 @@ public class SyntaxAnalyzer {
         if (lexemeIterator.hasNext()) {
             currentLexeme = lexemeIterator.next();
             if (currentLexeme.lexemeType() != LexemeType.END) {
-                throw new UnexpectedSymbolsException(currentLexeme.startIndex());
+                throw new InvalidLexemeException("Ожидалась end", currentLexeme.startIndex());
             }
         }
     }
@@ -102,7 +125,6 @@ public class SyntaxAnalyzer {
         if (currentLexeme.lexemeCategory() != LexemeCategory.IDENTIFIER) {
             throw new InvalidLexemeException(LexemeCategory.IDENTIFIER, "Ожидался идентификатор в присваивании", currentLexeme.startIndex());
         }
-
         if (lexemeIterator.hasNext()) {
             currentLexeme = lexemeIterator.next();
             if (currentLexeme.lexemeType() != LexemeType.ASSIGMENT) {

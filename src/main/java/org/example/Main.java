@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.core.Lexeme;
 import org.example.lexical.LexicalAnalyzer;
+import org.example.syntax.SyntaxAnalyzer;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,7 +15,9 @@ public class Main {
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer();
         List<Lexeme> lexemes = lexicalAnalyzer.startAnalyze(input);
         for(Lexeme lexeme : lexemes) {
-            System.out.println(lexeme);
+            System.out.println(lexeme.toString());
         }
+        SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(lexemes);
+        if(syntaxAnalyzer.startAnalyze()) System.out.println("Синтаксический анализ прошел успешно");
     }
 }
